@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: email-trigger-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - email-trigger-network
+
+  backend:
+    build: .
+    container_name: email-trigger-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URL=mongodb://mongodb:27017
+      - DATABASE_NAME=email_trigger
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - SECRET_KEY=${SECRET_KEY}
+      - APP_URL=${APP_URL:-http://localhost:8000}
+      - ADMIN_EMAILS=${ADMIN_EMAILS:-}
+    depends_on:
+      - mongodb
+    networks:
+      - email-trigger-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  email-trigger-network:
+    driver: bridge

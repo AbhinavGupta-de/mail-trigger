@@ -1,0 +1,17 @@
+version: '3.8'
+
+# Development docker-compose - only runs MongoDB
+# Frontend and backend run locally for hot reload
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: email-trigger-mongodb-dev
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_dev_data:/data/db
+
+volumes:
+  mongodb_dev_data:
